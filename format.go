@@ -1,27 +1,27 @@
 package main
 
 import (
+	"fmt"
 	"github.com/aabizri/msa"
 	"github.com/gyuho/goraph"
 	"strconv"
 )
 
+// format transforms a graph, root ID and feasability into a ready-to-use *Output
 func format(graph goraph.Graph, rootID uint, feasible bool) (*Output, error) {
 	// Create a new output data structure
 	var output *Output = &Output{}
 
 	// Check feasability
+	output.Feasible = feasible
 	if !feasible {
-		output.Feasible = false
 		return output, nil
-	} else {
-		output.Feasible = true
 	}
 
 	// Get total cost
 	totalWeight, err := msa.TotalWeight(graph)
 	if err != nil {
-		return output, err
+		return output, fmt.Errorf("format: error: %v", err)
 	}
 	output.TotalCost = uint(totalWeight)
 
