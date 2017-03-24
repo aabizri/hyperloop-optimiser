@@ -3,10 +3,10 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"github.com/aabizri/msa"
 	"net/http"
-	"flag"
 	"strconv"
 )
 
