@@ -10,14 +10,31 @@ import (
 )
 
 var (
-	portFlag = flag.Uint("p", 8080, "Port to listen to")
-	pathFlag = flag.String("path", "/", "Path to endpoint")
+	portFlag = flag.Uint("p", 8080, "Port to listen to")    // Indicates the port to listen to
+	pathFlag = flag.String("path", "/", "Path to endpoint") // Indicates the path of endpoint
 )
 
 func init() {
 	flag.Parse()
 }
 
+/*
+Input is what the requester sends, it is the equivalent of that JSON object:
+	{
+		"citiesCount" : 4,
+		"costOffers" : [
+			{
+				"from" : 0,
+				"to" : 1,
+				"price" : 6
+			},{
+				"from" : 1,
+				"to" : 2,
+				"price" : 10
+			}
+		]
+	}
+*/
 type Input struct {
 	CitiesCount uint        `json:"citiesCount"`
 	CostOffers  []CostOffer `json:"costOffers"`
@@ -30,6 +47,15 @@ func (input *Input) Validate() error {
 	}
 	return nil
 }
+
+/*
+CostOffer is a build offer for a hyperloop line, it is the equivalent of that JSON object:
+	{
+		"from" : 0,
+		"to" : 1,
+		"price" : 6
+	}
+*/
 type CostOffer struct {
 	From  uint `json:"from"`
 	To    uint `json:"to"`
@@ -46,6 +72,27 @@ func (co CostOffer) Validate() error {
 	}
 	return nil
 }
+
+/*
+Output is the structure to be json encoded and sent back to the requester.
+It is the equivalent of that JSON object:
+	{
+		"feasible" : true,
+		"totalCost" : 15,
+		"depotId" : 3,
+		"recommendedOffers" : [
+		{
+			"from" : 0,
+			"to" : 1,
+			"price" : 6
+		},{
+			"from" : 3,
+			"to" : 0,
+			"price" : 1
+		}
+		]
+	}
+*/
 type Output struct {
 	Feasible          bool        `json:"feasible"`
 	TotalCost         uint        `json:"totalCost,omitempty"`
@@ -60,6 +107,8 @@ func (o *Output) Validate() error {
 	}
 	return nil
 }
+
+// Handler handles http requests
 func Handler(w http.ResponseWriter, r *http.Request) {
 	// Log the request
 	err := logRequest(r)
