@@ -23,12 +23,29 @@ type Input struct {
 	CostOffers  []CostOffer `json:"costOffers"`
 }
 
+// Validate validates the input
+func (input *Input) Validate() error {
+	if input.CitiesCount == 0 {
+		return fmt.Errorf("Cities count isn't defined")
+	}
+	return nil
+}
 type CostOffer struct {
 	From  uint `json:"from"`
 	To    uint `json:"to"`
 	Price uint `json:"price"`
 }
 
+// Validate validates a CostOffer
+func (co CostOffer) Validate() error {
+	if co.From == co.To {
+		return fmt.Errorf("Origin and destination of line are the same !")
+	}
+	if co.Price == 0 {
+		return fmt.Errorf("Price is 0")
+	}
+	return nil
+}
 type Output struct {
 	Feasible          bool        `json:"feasible"`
 	TotalCost         uint        `json:"totalCost,omitempty"`
@@ -36,6 +53,13 @@ type Output struct {
 	RecommendedOffers []CostOffer `json:"recommendedOffers,omitempty"`
 }
 
+// Validate validates an Output
+func (o *Output) Validate() error {
+	if len(o.RecommendedOffers) == 0 {
+		return fmt.Errorf("No recommended offers given")
+	}
+	return nil
+}
 func Handler(w http.ResponseWriter, r *http.Request) {
 	// Log the request
 	err := logRequest(r)
