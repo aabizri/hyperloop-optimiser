@@ -6,8 +6,18 @@ import (
 	"fmt"
 	"github.com/aabizri/msa"
 	"net/http"
+	"flag"
 	"strconv"
 )
+
+var (
+	portFlag = flag.Uint("p", 8080, "Port to listen to")
+	pathFlag = flag.String("path", "/", "Path to endpoint")
+)
+
+func init() {
+	flag.Parse()
+}
 
 type Input struct {
 	CitiesCount uint        `json:"citiesCount"`
@@ -79,7 +89,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	// Build output
 	logger.Print("Building output...")
 	var id uint64
-	if root != nil{
+	if root != nil {
 		id, err = strconv.ParseUint(root.String(), 10, 64)
 		if err != nil {
 			logger.Printf("Error: %v", err)
@@ -87,7 +97,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	
+
 	output, err := format(minimal, uint(id), feasible)
 	if err != nil {
 		fmt.Fprintf(w, "Error: createOutput: %v", err)
@@ -111,7 +121,8 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/", Handler)
+	http.HandleFunc(*pathFlag, Handler)
 
-	logger.Fatal(http.ListenAndServe(":8080", nil))
+	portStr := ":" + strconv.FormatUint(uint64(*portFlag), 10)
+	logger.Fatal(http.ListenAndServe(portStr, nil))
 }

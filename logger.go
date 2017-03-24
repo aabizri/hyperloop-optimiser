@@ -22,9 +22,6 @@ func init() {
 	// Initialize the logger
 	logger = log.New(os.Stdout, "", log.LstdFlags|log.Lshortfile)
 
-	// Parse flags
-	flag.Parse()
-
 	// Initialize the directories
 	// First the request directory
 	reqDirPath := filepath.Join(*logDir, "req")
