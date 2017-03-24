@@ -22,9 +22,9 @@ type CostOffer struct {
 
 type Output struct {
 	Feasible          bool        `json:"feasible"`
-	TotalCost         uint        `json:"totalCost"`
-	DepotID           uint        `json:"depotId"`
-	RecommendedOffers []CostOffer `json:"recommendedOffers"`
+	TotalCost         uint        `json:"totalCost,omitempty",`
+	DepotID           uint        `json:"depotId,omitempty"`
+	RecommendedOffers []CostOffer `json:"recommendedOffers,omitempty"`
 }
 
 func Handler(w http.ResponseWriter, r *http.Request) {
@@ -78,12 +78,16 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 	// Build output
 	logger.Print("Building output...")
-	id, err := strconv.ParseUint(root.String(), 10, 64)
-	if err != nil {
-		logger.Printf("Error: %v", err)
-		fmt.Fprintf(w, "Error: converting uint: %v", err)
-		return
+	var id uint64
+	if root != nil{
+		id, err = strconv.ParseUint(root.String(), 10, 64)
+		if err != nil {
+			logger.Printf("Error: %v", err)
+			fmt.Fprintf(w, "Error: converting uint: %v", err)
+			return
+		}
 	}
+	
 	output, err := format(minimal, uint(id), feasible)
 	if err != nil {
 		fmt.Fprintf(w, "Error: createOutput: %v", err)
