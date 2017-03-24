@@ -32,7 +32,7 @@ type CostOffer struct {
 
 type Output struct {
 	Feasible          bool        `json:"feasible"`
-	TotalCost         uint        `json:"totalCost,omitempty",`
+	TotalCost         uint        `json:"totalCost,omitempty"`
 	DepotID           uint        `json:"depotId,omitempty"`
 	RecommendedOffers []CostOffer `json:"recommendedOffers,omitempty"`
 }
