@@ -1,4 +1,3 @@
-// TODO: Add feasability
 package main
 
 import (
