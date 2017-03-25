@@ -9,7 +9,7 @@ import (
 // listCities lists all the cities implied in an Input
 func (input *Input) listCities() ([]uint, error) {
 	// List all the unique cities
-	var cities []uint = make([]uint, input.CitiesCount)
+	var cities []uint = make([]uint, 0)
 	for _, co := range input.CostOffers {
 		// Sanity check
 		if co.From == co.To {
@@ -26,9 +26,6 @@ func (input *Input) listCities() ([]uint, error) {
 			}
 			if co.To == city {
 				toIsUnique = false
-			}
-			if fromIsUnique && toIsUnique {
-				break
 			}
 		}
 
