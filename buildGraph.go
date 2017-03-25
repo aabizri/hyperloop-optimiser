@@ -43,8 +43,8 @@ func (input *Input) listCities() ([]uint, error) {
 	return cities, nil
 }
 
-// addEdgeToGraph adds an edge to a graph given a Costoffer and a graph to add to (duh)
-func (co CostOffer) addEdgeToGraph(g goraph.Graph) error {
+// addToGraph adds an edge to a graph given a Costoffer and a graph to add to (duh)
+func (co CostOffer) addToGraph(g goraph.Graph) error {
 	err := g.AddEdge(goraph.NewNode(strconv.FormatUint(uint64(co.From), 10)).ID(), goraph.NewNode(strconv.FormatUint(uint64(co.To), 10)).ID(), float64(co.Price))
 	if err != nil {
 		return fmt.Errorf("addEdgeToGraph: error: %v", err)
@@ -76,7 +76,7 @@ func (input *Input) buildGraph() (goraph.Graph, error) {
 
 	// Now let's deal with the edges
 	for _, co := range input.CostOffers {
-		err = co.addEdgeToGraph(graph)
+		err = co.addToGraph(graph)
 		if err != nil {
 			return graph, fmt.Errorf("buildGraph: error: %v", err)
 		}
