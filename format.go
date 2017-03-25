@@ -7,6 +7,26 @@ import (
 	"strconv"
 )
 
+// sameOutput returns true if the outputs are the same
+func sameOutput(one, two *Output) bool {
+	// First let's test feasability
+	var (
+		feasabilitySame bool = one.Feasible == two.Feasible
+		totalCostSame   bool = one.TotalCost == two.TotalCost
+		depotIDSame     bool = one.DepotID == two.DepotID
+		mainValuesSame  bool = feasabilitySame && totalCostSame && depotIDSame
+	)
+
+	if !mainValuesSame {
+		return false
+	}
+
+	// Now let's test total cost
+	// TODO
+
+	return true
+}
+
 // format transforms a graph, root ID and feasability into a ready-to-use *Output
 func format(graph goraph.Graph, rootID uint, feasible bool) (*Output, error) {
 	// Create a new output data structure
