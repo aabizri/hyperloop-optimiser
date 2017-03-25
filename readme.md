@@ -2,6 +2,7 @@
 This project was developped for the [2017 Prague Hackaton](https://praguehackaton.com).
 Coded by [Alexandre A. Bizri](https://github.com/aabizri) in conjonction with Marin Godechot & Camille Marchetti (Team K-1000)
 Licensed under UNLICENSE
+Version 0.0
 
 ## Building the server
 In the directory:
