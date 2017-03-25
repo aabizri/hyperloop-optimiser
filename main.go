@@ -125,6 +125,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		msg := fmt.Sprintf("Error: while decoding json: %v", err)
 		logger.Print(msg)
+		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(w, msg)
 		return
 	}
@@ -136,6 +137,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		msg := fmt.Sprintf("Error: Validation error: %v", err)
 		logger.Print(msg)
+		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(w, msg)
 		return
 	}
@@ -144,7 +146,10 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	logger.Print("Building graph...")
 	graph, err := input.buildGraph()
 	if err != nil {
-		fmt.Fprintf(w, "Error: buildGraph: %v", err)
+		msg := fmt.Sprintf("Error: buildGraph: %v", err)
+		logger.Print(msg)
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, msg)
 		return
 	}
 	logger.Print("DONE\n")
@@ -153,7 +158,10 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	logger.Print("Calling MSA...")
 	feasible, minimal, root, err := msa.MSAAllRoots(graph)
 	if err != nil {
-		fmt.Fprintf(w, "Error: MSAAllRoots: %v", err)
+		msg := fmt.Sprintf("Error: MSAAllRoots: %v", err)
+		logger.Print(msg)
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, msg)
 		return
 	}
 	logger.Print("DONE\n")
@@ -164,18 +172,31 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	if root != nil {
 		id, err = strconv.ParseUint(root.String(), 10, 64)
 		if err != nil {
-			logger.Printf("Error: %v", err)
-			fmt.Fprintf(w, "Error: converting uint: %v", err)
+			msg := fmt.Sprintf("Error: converting uint: %v", err)
+			logger.Print(msg)
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(w, msg)
 			return
 		}
 	}
 
+	// Format the graph to an output
 	output, err := format(minimal, uint(id), feasible)
 	if err != nil {
-		fmt.Fprintf(w, "Error: createOutput: %v", err)
+		msg := fmt.Sprintf("Error: format: %v", err)
+		logger.Print(msg)
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, msg)
 		return
 	}
 	logger.Print("DONE\n")
+
+	// Validate the output
+	// An error isn't considered a complete failure
+	err = output.Validate()
+	if err != nil {
+		logger.Printf("Output is invalid ! Error : %v", err)
+	}
 
 	// Encode it
 	logger.Print("Encoding..")
@@ -183,7 +204,10 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	enc.SetIndent("", "\t") // Print it pretty
 	err = enc.Encode(output)
 	if err != nil {
-		fmt.Fprintf(w, "Error: json encode: %v", err)
+		msg := fmt.Sprintf("Error: Json encoding: %v", err)
+		logger.Print(msg)
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, msg)
 		return
 	}
 	logger.Print("DONE\n")
