@@ -37,6 +37,9 @@ func (input *Input) listCities() ([]uint, error) {
 			cities = append(cities, co.To)
 		}
 	}
+	if uint(len(cities)) != input.CitiesCount {
+		return cities, fmt.Errorf("listCities: amount of unique cities (%d) differs from advertised cities count (%d)", len(cities), input.CitiesCount)
+	}
 	return cities, nil
 }
 
